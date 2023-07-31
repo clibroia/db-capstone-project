@@ -37,6 +37,16 @@ CREATE TABLE `bookings` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `bookings`
+--
+
+LOCK TABLES `bookings` WRITE;
+/*!40000 ALTER TABLE `bookings` DISABLE KEYS */;
+INSERT INTO `bookings` VALUES (1,'2023-01-01','19:30:00',1,1),(2,'2023-01-01','19:30:00',2,5),(3,'2023-01-03','20:00:00',1,2),(4,'2023-01-03','20:30:00',2,3),(5,'2023-01-03','21:00:00',3,4),(6,'2023-01-09','20:00:00',1,1),(7,'2023-01-09','21:00:00',3,4);
+/*!40000 ALTER TABLE `bookings` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `customers`
 --
 
@@ -53,6 +63,16 @@ CREATE TABLE `customers` (
   UNIQUE KEY `CustomerPhoneNo_UNIQUE` (`CustomerPhoneNo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customers`
+--
+
+LOCK TABLES `customers` WRITE;
+/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+INSERT INTO `customers` VALUES (1,'Carmine','Libroia',123756954,'paperone@gmail.com'),(2,'Leonardo','Passalacqua',145956847,'paperino@gmail.com'),(3,'Anna','De Magistris',146523456,'minnie@gmail.com'),(4,'Debora','Altavilla',264574365,'paperina@gmail.com'),(5,'Gennaro','Saltafossi',562458743,'gastone@gmail.com');
+/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `employees`
@@ -77,6 +97,16 @@ CREATE TABLE `employees` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `employees`
+--
+
+LOCK TABLES `employees` WRITE;
+/*!40000 ALTER TABLE `employees` DISABLE KEYS */;
+INSERT INTO `employees` VALUES (1,'Napoleone','Bonaparte','Viale della Repubblica 31, Parigi',265457845,'rivoluzione@gmail.com','Manager',75000),(2,'Isaac','Newton','Via dell\'Astronomia 90, Roma',265475123,'scoperta@gmail.com','Head Chef',60000),(3,'Albert','Einstein','Corso Austria 89, Milano',256458951,'relativo@gmail.com','Head Waiter',60000),(4,'Italo','Svevo','Via della Resistenza 17, Trieste',258456149,'inetto@gmail.com','Assistant Chef',45000),(5,'Harry','Mason','Via del Silenzio 13, Milano',257946153,'silent@gmail.com','Waiter',30000),(6,'Scrooge','McDuck','Via Bancaria 77, Milano',256847623,'cashflow@gmail.com','Cashier',30000);
+/*!40000 ALTER TABLE `employees` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `items`
 --
 
@@ -87,29 +117,23 @@ CREATE TABLE `items` (
   `ItemID` int NOT NULL,
   `ItemType` varchar(30) COLLATE utf8mb3_bin NOT NULL,
   `ItemName` varchar(50) COLLATE utf8mb3_bin NOT NULL,
-  `ItemPrice` decimal(10,0) NOT NULL,
-  PRIMARY KEY (`ItemID`),
-  UNIQUE KEY `ItemName_UNIQUE` (`ItemName`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `menuitems`
---
-
-DROP TABLE IF EXISTS `menuitems`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `menuitems` (
   `MenuID` int NOT NULL,
-  `ItemID` int NOT NULL,
-  PRIMARY KEY (`MenuID`,`ItemID`),
-  KEY `fk_MenuItems_Menus1_idx` (`MenuID`),
-  KEY `fk_MenuItems_Items1_idx` (`ItemID`),
-  CONSTRAINT `fk_MenuItems_Items1` FOREIGN KEY (`ItemID`) REFERENCES `items` (`ItemID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_MenuItems_Menus1` FOREIGN KEY (`MenuID`) REFERENCES `menus` (`MenuID`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`ItemID`),
+  UNIQUE KEY `ItemName_UNIQUE` (`ItemName`),
+  KEY `fk_Items_Menus_idx` (`MenuID`),
+  CONSTRAINT `fk_Items_Menus` FOREIGN KEY (`MenuID`) REFERENCES `menus` (`MenuID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `items`
+--
+
+LOCK TABLES `items` WRITE;
+/*!40000 ALTER TABLE `items` DISABLE KEYS */;
+INSERT INTO `items` VALUES (1,'Starters','Ham',6),(2,'Starters','Salted Egg',6),(3,'Starters','Chips',6),(4,'Courses','Ragù alla bolognese',1),(5,'Courses','Ratatouille',3),(6,'Couses','Greek Salad',2),(7,'Courses','Falafel',4),(8,'Courses','Hot pepperoni',5),(9,'Drinks','Grappa',1),(10,'Drinks','Champagne',3),(11,'Drinks','Tequila',5),(12,'Drinks','Greek liquor',2),(13,'Drinks','Tea',4),(14,'Drinks','Tap Water',6),(15,'Drinks','Bottled Water',6),(16,'Desserts','Tiramisù',1),(17,'Desserts','Greek Cake',2),(18,'Desserts','Mousse',3),(19,'Desserts','Oasis Refresh',4),(20,'Desserts','Mexican Delicious',5);
+/*!40000 ALTER TABLE `items` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `menus`
@@ -124,6 +148,16 @@ CREATE TABLE `menus` (
   PRIMARY KEY (`MenuID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `menus`
+--
+
+LOCK TABLES `menus` WRITE;
+/*!40000 ALTER TABLE `menus` DISABLE KEYS */;
+INSERT INTO `menus` VALUES (1,'Italian'),(2,'Greek'),(3,'French'),(4,'Arabic'),(5,'Mexican'),(6,'International');
+/*!40000 ALTER TABLE `menus` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `orderdeliverystatus`
@@ -147,6 +181,15 @@ CREATE TABLE `orderdeliverystatus` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `orderdeliverystatus`
+--
+
+LOCK TABLES `orderdeliverystatus` WRITE;
+/*!40000 ALTER TABLE `orderdeliverystatus` DISABLE KEYS */;
+/*!40000 ALTER TABLE `orderdeliverystatus` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `orders`
 --
 
@@ -160,14 +203,56 @@ CREATE TABLE `orders` (
   `OrderQuantity` int NOT NULL,
   `OrderTotalCost` decimal(10,0) NOT NULL,
   `BookingID` int NOT NULL,
-  `MenuID` int NOT NULL,
+  `ItemID` int NOT NULL,
   PRIMARY KEY (`OrderID`),
   KEY `fk_Orders_Bookings1_idx` (`BookingID`),
-  KEY `fk_Orders_Menus1_idx` (`MenuID`),
+  KEY `fk_Orders_Items_idx` (`ItemID`),
   CONSTRAINT `fk_Orders_Bookings1` FOREIGN KEY (`BookingID`) REFERENCES `bookings` (`BookingID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_Orders_Menus1` FOREIGN KEY (`MenuID`) REFERENCES `menus` (`MenuID`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_Orders_Items` FOREIGN KEY (`ItemID`) REFERENCES `items` (`ItemID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `orders`
+--
+
+LOCK TABLES `orders` WRITE;
+/*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,'2023-01-01','19:45:00',3,15,1,10),(2,'2023-01-01','19:45:00',1,5,1,4);
+/*!40000 ALTER TABLE `orders` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Temporary view structure for view `ordersview`
+--
+
+DROP TABLE IF EXISTS `ordersview`;
+/*!50001 DROP VIEW IF EXISTS `ordersview`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `ordersview` AS SELECT 
+ 1 AS `OrderID`,
+ 1 AS `OrderQuantity`,
+ 1 AS `OrderTotalCost`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Final view structure for view `ordersview`
+--
+
+/*!50001 DROP VIEW IF EXISTS `ordersview`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`dba_little_lemon`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `ordersview` AS select `orders`.`OrderID` AS `OrderID`,`orders`.`OrderQuantity` AS `OrderQuantity`,`orders`.`OrderTotalCost` AS `OrderTotalCost` from `orders` where (`orders`.`OrderQuantity` > 2) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -178,4 +263,4 @@ CREATE TABLE `orders` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-31  6:26:44
+-- Dump completed on 2023-07-31  8:27:41
