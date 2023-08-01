@@ -27,7 +27,6 @@ DROP TABLE IF EXISTS `bookings`;
 CREATE TABLE `bookings` (
   `BookingID` int NOT NULL,
   `BookingDate` date NOT NULL,
-  `BookingTime` time NOT NULL,
   `BookingTableNo` int NOT NULL,
   `CustomerID` int NOT NULL,
   PRIMARY KEY (`BookingID`),
@@ -42,7 +41,7 @@ CREATE TABLE `bookings` (
 
 LOCK TABLES `bookings` WRITE;
 /*!40000 ALTER TABLE `bookings` DISABLE KEYS */;
-INSERT INTO `bookings` VALUES (1,'2023-01-01','19:30:00',1,1),(2,'2023-01-01','19:30:00',2,5),(3,'2023-01-03','20:00:00',1,2),(4,'2023-01-03','20:30:00',2,3),(5,'2023-01-03','21:00:00',3,4),(6,'2023-01-09','20:00:00',1,1),(7,'2023-01-09','21:00:00',3,4);
+INSERT INTO `bookings` VALUES (1,'2023-01-01',1,1),(2,'2023-01-01',2,5),(3,'2023-01-03',1,2),(4,'2023-01-03',2,3),(5,'2023-01-03',3,4),(6,'2023-01-09',1,1),(7,'2023-01-09',3,4),(12,'2022-11-12',3,3),(13,'2022-10-11',2,2),(14,'2022-10-13',2,1),(15,'2023-08-01',2,3),(16,'2023-08-16',6,3),(17,'2023-08-02',3,5);
 /*!40000 ALTER TABLE `bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -239,6 +238,82 @@ SET character_set_client = @saved_cs_client;
 --
 -- Dumping routines for database 'little_lemon_db'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `AddBooking` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`dba_little_lemon`@`%` PROCEDURE `AddBooking`(IN booking_id INT, IN booking_date DATE, IN table_no INT, IN customer_id INT)
+BEGIN
+INSERT INTO bookings(BookingID, BookingDate, BookingTableNo, CustomerID)
+             VALUES (booking_id, booking_date, table_no, customer_id);
+SELECT "New booking added" AS Confirmation;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AddValidBooking` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`dba_little_lemon`@`%` PROCEDURE `AddValidBooking`(IN booking_date DATE, IN table_no INT, IN customer_id INT)
+BEGIN
+START TRANSACTION;
+SELECT MAX(BookingID) INTO @booking_id
+FROM bookings;
+SET @booking_id = @booking_id + 1;
+IF EXISTS(SELECT BookingID
+          FROM bookings
+          WHERE BookingDate = booking_date AND BookingTableNo = table_no) 
+          THEN
+              (SELECT CONCAT("Table ", CAST(table_no AS CHAR), " is already booked - booking cancelled") AS "Booking Status");
+              ROLLBACK;
+ELSE
+    INSERT INTO bookings(BookingID, BookingDate, BookingTableNo, CustomerID) 
+                 VALUES (@booking_id, booking_date, table_no, customer_id);
+	(SELECT CONCAT("Table ", CAST(table_no AS CHAR), " available - booking confirmed") AS "Booking Status");
+    COMMIT;
+END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `CancelBooking` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`dba_little_lemon`@`%` PROCEDURE `CancelBooking`(IN booking_id INT)
+BEGIN
+DELETE FROM bookings
+WHERE BookingID = booking_id;
+SELECT CONCAT("Booking ", CAST(booking_id AS CHAR), " cancelled") AS Confirmation;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `CancelOrder` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -260,6 +335,31 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `CheckBooking` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`dba_little_lemon`@`%` PROCEDURE `CheckBooking`(IN booking_date DATE, IN table_no INT)
+BEGIN
+SELECT CASE
+WHEN NOT EXISTS (SELECT BookingID
+                 FROM bookings
+                 WHERE BookingDate = booking_date AND BookingTableNo = table_no) 
+                 THEN CONCAT("Table ", CAST(table_no AS CHAR), " is available")
+ELSE CONCAT("Table ", CAST(table_no AS CHAR), " is already booked")
+END AS "Booking Status";
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `GetMaxQuantity` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -274,6 +374,28 @@ CREATE DEFINER=`dba_little_lemon`@`%` PROCEDURE `GetMaxQuantity`()
 BEGIN
 SELECT MAX(OrderQuantity) AS "Max Quantity Ordered"
 FROM orders;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `UpdateBooking` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`dba_little_lemon`@`%` PROCEDURE `UpdateBooking`(IN booking_id INT, IN booking_date DATE)
+BEGIN
+UPDATE bookings
+SET BookingDate = booking_date
+WHERE BookingID = booking_id;
+SELECT CONCAT("Booking ", CAST(booking_id AS CHAR), " updated") AS Confirmation;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -308,4 +430,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-08-01  4:57:34
+-- Dump completed on 2023-08-01  6:50:54
