@@ -218,7 +218,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,'2023-01-01','19:45:00',3,15,1,10),(2,'2023-01-01','19:45:00',1,5,1,4);
+INSERT INTO `orders` VALUES (1,'2023-01-01','19:45:00',3,15,1,10),(2,'2023-01-01','19:45:00',1,5,1,4),(3,'2023-01-01','19:45:00',10,180,2,11),(4,'2023-01-03','20:10:00',5,25,3,10),(5,'2023-01-03','20:40:00',10,50,4,10);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -235,6 +235,51 @@ SET @saved_cs_client     = @@character_set_client;
  1 AS `OrderQuantity`,
  1 AS `OrderTotalCost`*/;
 SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping routines for database 'little_lemon_db'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `CancelOrder` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`dba_little_lemon`@`%` PROCEDURE `CancelOrder`(IN order_id INT)
+BEGIN
+DELETE FROM orders
+WHERE OrderID = order_id;
+SELECT CONCAT("Order ", CAST(order_id AS CHAR), " has been cancelled") AS Confirmation; 
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `GetMaxQuantity` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`dba_little_lemon`@`%` PROCEDURE `GetMaxQuantity`()
+BEGIN
+SELECT MAX(OrderQuantity) AS "Max Quantity Ordered"
+FROM orders;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Final view structure for view `ordersview`
@@ -263,4 +308,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-31  8:27:41
+-- Dump completed on 2023-08-01  4:57:34
